@@ -103,7 +103,7 @@ const Home = () => {
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 story-entrance">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 telugu-text">
-            నా ఊరు నా సర్వం
+            నా ఊరు నా శర్వం
           </h1>
           <h2 className="text-2xl md:text-3xl font-semibold mb-6 opacity-90">
             My Village, My Everything
