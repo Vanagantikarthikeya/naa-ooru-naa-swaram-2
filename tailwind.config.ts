@@ -52,6 +52,18 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				'village-red': {
+					DEFAULT: 'hsl(var(--village-red))',
+					foreground: 'hsl(var(--village-red-foreground))'
+				},
+				'village-yellow': {
+					DEFAULT: 'hsl(var(--village-yellow))',
+					foreground: 'hsl(var(--village-yellow-foreground))'
+				},
+				'village-violet': {
+					DEFAULT: 'hsl(var(--village-violet))',
+					foreground: 'hsl(var(--village-violet-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
