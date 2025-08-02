@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Filter, MapPin, Calendar, User, Heart, MessageCircle, Share2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedDistrict, setSelectedDistrict] = useState("all");
+  const { isEnglish } = useLanguage();
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -119,10 +121,10 @@ const Gallery = () => {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 text-primary telugu-text">
-            గ్రామ కథల గ్యాలరీ
+            {isEnglish ? "Village Stories Gallery" : "గ్రామ కథల గ్యాలరీ"}
           </h1>
           <p className="text-xl text-muted-foreground">
-            Explore and discover stories from Telugu villages across the world
+            {isEnglish ? "Explore and discover stories from Telugu villages across the world" : "ప్రపంచవ్యాప్తంగా ఉన్న తెలుగు గ్రామాల నుండి కథలను అన్వేషించండి మరియు కనుగొనండి"}
           </p>
         </div>
 
@@ -252,11 +254,9 @@ const Gallery = () => {
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <button className="flex items-center space-x-1 hover:text-village-red transition-colors">
                         <Heart className="w-4 h-4" />
-                        <span>{item.likes}</span>
                       </button>
                       <button className="flex items-center space-x-1 hover:text-accent transition-colors">
                         <MessageCircle className="w-4 h-4" />
-                        <span>{item.comments}</span>
                       </button>
                     </div>
                     <Button variant="ghost" size="sm" className="h-8 px-2">
@@ -272,7 +272,7 @@ const Gallery = () => {
         {/* Load More */}
         <div className="text-center mt-12">
           <Button variant="outline" size="lg" className="px-8">
-            Load More Stories
+            {isEnglish ? "Load More Stories" : "మరిన్ని కథలను లోడ్ చేయండి"}
           </Button>
         </div>
       </div>

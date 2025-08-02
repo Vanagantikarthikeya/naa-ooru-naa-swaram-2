@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, ArrowRight, Users, MapPin, Camera, Mic } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, Users, MapPin, Camera, Mic, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { NavLink } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 import villageHero from "@/assets/village-hero.jpg";
 import villageTemple from "@/assets/village-temple.jpg";
 import villageFestival from "@/assets/village-festival.jpg";
@@ -10,38 +11,59 @@ import villageElder from "@/assets/village-elder.jpg";
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { isEnglish, toggleLanguage } = useLanguage();
 
   const carouselImages = [
-    { src: villageHero, title: "గ్రామీణ జీవితం", subtitle: "Traditional Village Life" },
-    { src: villageTemple, title: "పవిత్ర స్థలాలు", subtitle: "Sacred Places" },
-    { src: villageFestival, title: "పండుగలు", subtitle: "Festivals" },
-    { src: villageElder, title: "మన పెద్దలు", subtitle: "Our Elders" },
+    { 
+      src: villageHero, 
+      title: isEnglish ? "Traditional Village Life" : "గ్రామీణ జీవితం", 
+      subtitle: isEnglish ? "Village Heritage" : "గ్రామ వారసత్వం" 
+    },
+    { 
+      src: villageTemple, 
+      title: isEnglish ? "Sacred Places" : "పవిత్ర స్థలాలు", 
+      subtitle: isEnglish ? "Holy Temples" : "పవిత్ర దేవాలయాలు" 
+    },
+    { 
+      src: villageFestival, 
+      title: isEnglish ? "Festivals" : "పండుగలు", 
+      subtitle: isEnglish ? "Cultural Celebrations" : "సాంస్కృతిక ఉత్సవాలు" 
+    },
+    { 
+      src: villageElder, 
+      title: isEnglish ? "Our Elders" : "మన పెద్దలు", 
+      subtitle: isEnglish ? "Wisdom Keepers" : "జ్ఞాన వేత్తలు" 
+    },
   ];
 
   const features = [
     {
       icon: Users,
-      title: "Community Stories",
-      description: "Share and discover stories from your village community",
-      color: "village-red"
+      title: isEnglish ? "Community Stories" : "సమాజ కథలు",
+      description: isEnglish ? "Share and discover stories from your village community" : "మీ గ్రామ సమాజం నుండి కథలను పంచుకోండి మరియు కనుగొనండి",
+      color: "village-red",
+      link: "/gallery"
     },
     {
       icon: MapPin,
-      title: "Village Heritage",
-      description: "Document and preserve your village's unique heritage",
-      color: "village-yellow"
+      title: isEnglish ? "Village Heritage" : "గ్రామ వారసత్వం",
+      description: isEnglish ? "Document and preserve your village's unique heritage" : "మీ గ్రామం యొక్క ప్రత్యేక వారసత్వాన్ని నమోదు చేసి భద్రపరచండి",
+      color: "village-yellow",
+      link: "/about"
     },
     {
       icon: Camera,
-      title: "Visual Memories",
-      description: "Capture moments that define your village identity",
-      color: "village-violet"
+      title: isEnglish ? "Visual Memories" : "దృశ్య జ్ఞాపకాలు",
+      description: isEnglish ? "Capture moments that define your village identity" : "మీ గ్రామ గుర్తింపును నిర్వచించే క్షణాలను భద్రపరచండి",
+      color: "village-violet",
+      link: "/gallery"
     },
     {
       icon: Mic,
-      title: "Oral Traditions",
-      description: "Record and share traditional songs and stories",
-      color: "accent"
+      title: isEnglish ? "Oral Traditions" : "మౌఖిక సంప్రదాయాలు",
+      description: isEnglish ? "Record and share traditional songs and stories" : "సాంప్రదాయిక పాటలు మరియు కథలను రికార్డ్ చేసి పంచుకోండి",
+      color: "accent",
+      link: "/contribute"
     }
   ];
 
@@ -100,23 +122,34 @@ const Home = () => {
           <ChevronRight className="w-6 h-6" />
         </Button>
 
+        {/* Language Toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleLanguage}
+          className="absolute top-4 right-4 z-20 text-white hover:bg-white/20 border border-white/30"
+        >
+          <Languages className="w-4 h-4 mr-2" />
+          {isEnglish ? "తెలుగు" : "English"}
+        </Button>
+
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4 story-entrance">
           <h1 className="text-5xl md:text-7xl font-bold mb-4 telugu-text">
-            నా ఊరు నా శర్వం
+            {isEnglish ? "My Village, My Everything" : "నా ఊరు నా శర్వం"}
           </h1>
           <h2 className="text-2xl md:text-3xl font-semibold mb-6 opacity-90">
-            My Village, My Everything
+            {isEnglish ? "Preserving Cultural Heritage" : "సాంస్కృతిక వారసత్వాన్ని భద్రపరచడం"}
           </h2>
           <p className="text-xl md:text-2xl mb-8 telugu-text opacity-80">
-            ప్రతి ఊరు ఒక కథ, ప్రతి మనిషి ఒక చరిత్ర
+            {isEnglish ? "Every village has a story, every person has a history" : "ప్రతి ఊరు ఒక కథ, ప్రతి మనిషి ఒక చరిత్ర"}
           </p>
           <p className="text-lg mb-12 opacity-75 max-w-2xl mx-auto">
-            Every village has a story, every person has a history. Join us in preserving the essence of our cultural roots.
+            {isEnglish ? "Join us in preserving the essence of our cultural roots and sharing the stories that define us." : "మన సాంస్కృతిక మూలాల సారాంశాన్ని భద్రపరచడంలో మరియు మనల్ని నిర్వచించే కథలను పంచుకోవడంలో మాతో చేరండి."}
           </p>
           <NavLink to="/contribute">
             <Button size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground font-semibold px-8 py-4 text-lg shadow-warm">
-              Start Sharing Your Story
+              {isEnglish ? "Start Sharing Your Story" : "మీ కథను పంచుకోవడం ప్రారంభించండి"}
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </NavLink>
@@ -140,28 +173,30 @@ const Home = () => {
       <section className="py-20 px-4 max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4 text-primary">
-            Preserve & Share Your Heritage
+            {isEnglish ? "Preserve & Share Your Heritage" : "మీ వారసత్వాన్ని భద్రపరచండి మరియు పంచుకోండి"}
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Our platform empowers communities to document, share, and celebrate their unique village stories and traditions.
+            {isEnglish ? "Our platform empowers communities to document, share, and celebrate their unique village stories and traditions." : "మా వేదిక సమాజాలను వారి ప్రత్యేక గ్రామ కథలు మరియు సంప్రదాయాలను నమోదు చేయడానికి, పంచుకోవడానికి మరియు జరుపుకోవడానికి శక్తినిస్తుంది."}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="group hover:shadow-village transition-all duration-300 village-float border-0 bg-card/50 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${feature.color}/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <feature.icon className={`w-8 h-8 text-${feature.color}`} />
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-primary">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
+            <NavLink key={index} to={feature.link}>
+              <Card className="group hover:shadow-village transition-all duration-300 village-float border-0 bg-card/50 backdrop-blur-sm cursor-pointer">
+                <CardContent className="p-6 text-center">
+                  <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-${feature.color}/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <feature.icon className={`w-8 h-8 text-${feature.color}`} />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 text-primary">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            </NavLink>
           ))}
         </div>
       </section>
@@ -170,20 +205,20 @@ const Home = () => {
       <section className="py-20 gradient-sunset">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-4xl font-bold mb-6 text-white telugu-text">
-            మీ కథను పంచుకోండి
+            {isEnglish ? "Share Your Story" : "మీ కథను పంచుకోండి"}
           </h2>
           <p className="text-xl mb-8 text-white/90">
-            Join thousands of villagers who are preserving their heritage for future generations.
+            {isEnglish ? "Join thousands of villagers who are preserving their heritage for future generations." : "భవిష్యత్ తరాలకు తమ వారసత్వాన్ని భద్రపరుస్తున్న వేలాది గ్రామస్థులతో చేరండి."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <NavLink to="/auth">
               <Button size="lg" variant="secondary" className="font-semibold px-8">
-                Join the Community
+                {isEnglish ? "Join the Community" : "సమాజంలో చేరండి"}
               </Button>
             </NavLink>
             <NavLink to="/gallery">
               <Button size="lg" variant="outline" className="font-semibold px-8 border-white text-white hover:bg-white hover:text-primary">
-                Explore Stories
+                {isEnglish ? "Explore Stories" : "కథలను అన్వేషించండి"}
               </Button>
             </NavLink>
           </div>
