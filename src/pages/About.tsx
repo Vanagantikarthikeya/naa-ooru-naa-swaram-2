@@ -1,36 +1,28 @@
 import { Heart, Users, Globe, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
 const About = () => {
-  const values = [
-    {
-      icon: Heart,
-      title: "Cultural Preservation",
-      description: "Safeguarding our village traditions, languages, and customs for future generations.",
-      color: "village-red"
-    },
-    {
-      icon: Users,
-      title: "Community Unity",
-      description: "Bringing villages together through shared stories and common heritage.",
-      color: "village-yellow"
-    },
-    {
-      icon: Globe,
-      title: "Global Connection",
-      description: "Connecting Telugu villages worldwide while maintaining local identity.",
-      color: "village-violet"
-    },
-    {
-      icon: Shield,
-      title: "Authentic Stories",
-      description: "Ensuring genuine, community-verified content that honors our roots.",
-      color: "accent"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen py-12">
+  const values = [{
+    icon: Heart,
+    title: "Cultural Preservation",
+    description: "Safeguarding our village traditions, languages, and customs for future generations.",
+    color: "village-red"
+  }, {
+    icon: Users,
+    title: "Community Unity",
+    description: "Bringing villages together through shared stories and common heritage.",
+    color: "village-yellow"
+  }, {
+    icon: Globe,
+    title: "Global Connection",
+    description: "Connecting Telugu villages worldwide while maintaining local identity.",
+    color: "village-violet"
+  }, {
+    icon: Shield,
+    title: "Authentic Stories",
+    description: "Ensuring genuine, community-verified content that honors our roots.",
+    color: "accent"
+  }];
+  return <div className="min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="text-center mb-16">
@@ -71,8 +63,7 @@ const About = () => {
             What We Stand For
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="group hover:shadow-village transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm">
+            {values.map((value, index) => <Card key={index} className="group hover:shadow-village transition-all duration-300 border-0 bg-card/50 backdrop-blur-sm">
                 <CardContent className="p-8">
                   <div className="flex items-start space-x-4">
                     <div className={`w-12 h-12 rounded-lg bg-${value.color}/10 flex items-center justify-center group-hover:scale-110 transition-transform flex-shrink-0`}>
@@ -88,8 +79,7 @@ const About = () => {
                     </div>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
 
@@ -133,21 +123,19 @@ const About = () => {
         <div className="text-center">
           <Card className="bg-gradient-sunset border-0 text-white">
             <CardContent className="p-12">
-              <h3 className="text-3xl font-bold mb-4 telugu-text">
+              <h3 className="text-3xl mb-4 telugu-text font-bold text-yellow-400">
                 మాతో చేరండి
               </h3>
-              <p className="text-xl mb-8 opacity-90">
+              <p className="text-xl mb-8 opacity-90 text-lime-500">
                 Join us in this noble mission to preserve our cultural heritage
               </p>
-              <p className="text-lg opacity-80 max-w-2xl mx-auto">
+              <p className="text-lg opacity-80 max-w-2xl mx-auto text-lime-400">
                 Every story you share, every tradition you document, and every memory you preserve becomes a gift to future generations. Together, we can ensure that the soul of our villages lives on forever.
               </p>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default About;
