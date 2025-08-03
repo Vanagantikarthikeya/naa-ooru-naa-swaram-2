@@ -1,20 +1,37 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { Menu, X, Home, User, Users, Plus, Image, BookOpen } from "lucide-react";
+import { Menu, X, Home, User, Users, Plus, Image, BookOpen, Languages, LogOut, Settings, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isEnglish, toggleLanguage } = useLanguage();
+  const { user, isAdmin, signOut } = useAuth();
 
-  const navItems = [
-    { to: "/", label: "హోమ్", icon: Home },
-    { to: "/about", label: "గురించి", icon: BookOpen },
-    { to: "/contribute", label: "కంట్రిబ్యూట్", icon: Plus },
-    { to: "/gallery", label: "గ్యాలరీ", icon: Image },
-    { to: "/dashboard", label: "డాష్‌బోర్డ్", icon: Users },
-    { to: "/auth", label: "లాగిన్", icon: User },
-  ];
+  const getNavItems = () => {
+    const baseItems = [
+      { to: "/", label: isEnglish ? "Home" : "హోమ్", icon: Home },
+      { to: "/about", label: isEnglish ? "About" : "గురించి", icon: BookOpen },
+      { to: "/contribute", label: isEnglish ? "Contribute" : "కంట్రిబ్యూట్", icon: Plus },
+      { to: "/gallery", label: isEnglish ? "Gallery" : "గ్యాలరీ", icon: Image },
+    ];
+
+    if (user) {
+      baseItems.push({ to: "/dashboard", label: isEnglish ? "Dashboard" : "డాష్‌బోర్డ్", icon: Users });
+      if (isAdmin) {
+        baseItems.push({ to: "/admin", label: isEnglish ? "Admin Panel" : "అడ్మిన్ ప్యానెల్", icon: Shield });
+      }
+    } else {
+      baseItems.push({ to: "/auth", label: isEnglish ? "Login" : "లాగిన్", icon: User });
+    }
+
+    return baseItems;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <nav className="bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
@@ -23,11 +40,13 @@ const Navigation = () => {
           {/* Logo */}
           <NavLink to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full gradient-village"></div>
-            <span className="text-xl font-bold text-primary telugu-text">నా ఊరు</span>
+            <span className="text-xl font-bold text-primary telugu-text">
+              {isEnglish ? "Devalaya Dhaara" : "నా ఊరు"}
+            </span>
           </NavLink>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -44,6 +63,30 @@ const Navigation = () => {
                 <span>{item.label}</span>
               </NavLink>
             ))}
+            
+            {/* Language Toggle */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleLanguage}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Languages className="w-4 h-4 mr-2" />
+              {isEnglish ? "తెలుగు" : "English"}
+            </Button>
+
+            {/* User Actions */}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={signOut}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                {isEnglish ? "Logout" : "లాగ్ అవుట్"}
+              </Button>
+            )}
           </div>
 
           {/* Mobile Navigation */}
@@ -72,6 +115,31 @@ const Navigation = () => {
                     <span>{item.label}</span>
                   </NavLink>
                 ))}
+                
+                {/* Language Toggle Mobile */}
+                <Button
+                  variant="ghost"
+                  onClick={toggleLanguage}
+                  className="justify-start px-4 py-3 text-muted-foreground hover:text-foreground"
+                >
+                  <Languages className="w-5 h-5 mr-3" />
+                  {isEnglish ? "తెలుగు" : "English"}
+                </Button>
+
+                {/* User Actions Mobile */}
+                {user && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      signOut();
+                      setIsOpen(false);
+                    }}
+                    className="justify-start px-4 py-3 text-muted-foreground hover:text-foreground"
+                  >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    {isEnglish ? "Logout" : "లాగ్ అవుట్"}
+                  </Button>
+                )}
               </div>
             </SheetContent>
           </Sheet>
