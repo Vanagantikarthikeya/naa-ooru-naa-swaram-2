@@ -41,7 +41,7 @@ const Navigation = () => {
           <NavLink to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full gradient-village"></div>
             <span className="text-xl font-bold text-primary telugu-text">
-              {isEnglish ? "Devalaya Dhaara" : "నా ఊరు"}
+              {isEnglish ? "Naa Ooru Naa Sarvam" : "నా ఊరు నా సర్వం"}
             </span>
           </NavLink>
 
