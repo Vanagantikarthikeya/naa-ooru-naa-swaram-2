@@ -174,8 +174,48 @@ const AdminPanel = () => {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
-  if (!user || !isAdmin) {
-    return <Navigate to="/auth" replace />;
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8 bg-card rounded-lg border">
+          <h2 className="text-2xl font-bold mb-4 text-foreground">
+            {isEnglish ? "Admin Panel Access" : "అడ్మిన్ ప్యానెల్ యాక్సెస్"}
+          </h2>
+          <p className="text-muted-foreground mb-4">
+            {isEnglish 
+              ? "Please log in with admin credentials to access the admin panel." 
+              : "అడ్మిన్ ప్యానెల్‌ను యాక్సెస్ చేయడానికి దయచేసి అడ్మిన్ క్రెడెన్షియల్స్‌తో లాగిన్ చేయండి."}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {isEnglish 
+              ? "Admin Email: vanagantikarthik@gmail.com" 
+              : "అడ్మిన్ ఇమెయిల్: vanagantikarthik@gmail.com"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center p-8 bg-card rounded-lg border">
+          <h2 className="text-2xl font-bold mb-4 text-destructive">
+            {isEnglish ? "Access Denied" : "యాక్సెస్ తిరస్కరించబడింది"}
+          </h2>
+          <p className="text-muted-foreground mb-4">
+            {isEnglish 
+              ? "Only administrators can access this panel. Please contact the admin if you believe this is an error." 
+              : "అడ్మినిస్ట్రేటర్లు మాత్రమే ఈ ప్యానెల్‌ను యాక్సెస్ చేయగలరు. ఇది ఎర్రర్ అని మీరు నమ్మితే దయచేసి అడ్మిన్‌ని సంప్రదించండి."}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {isEnglish 
+              ? "Admin Email: vanagantikarthik@gmail.com" 
+              : "అడ్మిన్ ఇమెయిల్: vanagantikarthik@gmail.com"}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
