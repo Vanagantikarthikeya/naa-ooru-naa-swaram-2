@@ -269,6 +269,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_admin_user: {
+        Args: { admin_email: string }
+        Returns: undefined
+      }
       get_user_profile: {
         Args: { _user_id: string }
         Returns: {
