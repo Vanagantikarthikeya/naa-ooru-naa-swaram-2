@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -60,114 +59,28 @@ const AdminPanel = () => {
   }, [user, isAdmin]);
 
   const loadDashboardData = async () => {
-    try {
-      setLoadingData(true);
-      
-      // Load users
-      const { data: usersData } = await supabase
-        .from('profiles')
-        .select('id, user_id, email, display_name, total_contributions, created_at')
-        .order('created_at', { ascending: false });
-
-      // Load contributions with user email
-      const { data: contributionsData } = await supabase
-        .from('contributions')
-        .select(`
-          id, title, type, like_count, comment_count, created_at, user_id
-        `)
-        .order('created_at', { ascending: false});
-
-      // Load analytics
-      const { data: analyticsData } = await supabase
-        .from('analytics')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      setUsers(usersData || []);
-      
-      // Match contributions with user emails
-      const formattedContributions = contributionsData?.map(contrib => {
-        const user = usersData?.find(u => u.user_id === contrib.user_id);
-        return {
-          ...contrib,
-          user_email: user?.email || 'Unknown'
-        };
-      }) || [];
-      setContributions(formattedContributions);
-
-      // Calculate analytics
-      const totalLikes = contributionsData?.reduce((sum, c) => sum + (c.like_count || 0), 0) || 0;
-      const totalComments = contributionsData?.reduce((sum, c) => sum + (c.comment_count || 0), 0) || 0;
-
-      setAnalytics({
-        totalUsers: usersData?.length || 0,
-        totalContributions: contributionsData?.length || 0,
-        totalLikes,
-        totalComments,
-        recentActivity: analyticsData || []
-      });
-
-    } catch (error) {
-      console.error('Error loading dashboard data:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load dashboard data",
-      });
-    } finally {
-      setLoadingData(false);
-    }
+    setLoadingData(false);
+    toast({
+      variant: "destructive",
+      title: "Database Disconnected",
+      description: "Admin panel requires database connection",
+    });
   };
 
   const deleteUser = async (userId: string) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('user_id', userId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "User deleted successfully",
-      });
-
-      loadDashboardData();
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete user",
-      });
-    }
+    toast({
+      variant: "destructive",
+      title: "Database Disconnected",
+      description: "Cannot delete user - database connection removed",
+    });
   };
 
   const deleteContribution = async (contributionId: string) => {
-    try {
-      const { error } = await supabase
-        .from('contributions')
-        .delete()
-        .eq('id', contributionId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Contribution deleted successfully",
-      });
-
-      loadDashboardData();
-    } catch (error) {
-      console.error('Error deleting contribution:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete contribution",
-      });
-    }
+    toast({
+      variant: "destructive",
+      title: "Database Disconnected", 
+      description: "Cannot delete contribution - database connection removed",
+    });
   };
 
   if (loading) {
