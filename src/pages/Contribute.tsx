@@ -9,46 +9,152 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { uploadFile, getCategories, getCategoryName } from "@/lib/apiClient";
+import { useNavigate } from "react-router-dom";
 
 const Contribute = () => {
   const [isTeluguMode, setIsTeluguMode] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [activeTab, setActiveTab] = useState("text");
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    title: "",
+    location: "",
+    category: "",
+    description: ""
+  });
 
-  const categories = [
-    "Temples & Sacred Places",
-    "Festivals & Celebrations", 
-    "Local People & Stories",
-    "Traditional Crafts",
-    "Food & Recipes",
-    "Folk Songs & Music",
-    "Historical Events",
-    "Village Landmarks"
-  ];
+  const { user, token } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const teluguCategories = [
-    "దేవాలయాలు మరియు పవిత్ర స్థలాలు",
-    "పండుగలు మరియు వేడుకలు",
-    "స్థానిక వ్యక్తులు మరియు కథలు",
-    "సాంప్రదాయ కళలు",
-    "ఆహారం మరియు వంటకాలు",
-    "జానపద పాటలు మరియు సంగీతం",
-    "చారిత్రక సంఘటనలు",
-    "గ్రామ ప్రాముఖ్య స్థలాలు"
-  ];
+  // Fixed categories with IDs that match the API
+  const categoryMap = {
+    "ab7f2757-ccdf-4ef6-9850-2cdfe6e1b422": { en: "Local History", te: "చారిత్రక సంఘటనలు" },
+    "ab9fa2ce-1f83-4e91-b89d-cca18e8b301e": { en: "Culture", te: "సాంప్రదాయ కళలు" },
+    "4366cab1-031e-4b37-816b-311ee34461a9": { en: "Images", te: "చిత్రాలు" },
+    "94a13c20-8a03-45da-8829-10e2fe1e61a1": { en: "Architecture", te: "దేవాలయాలు మరియు పవిత్ర స్థలాలు" },
+    "96e5104f-c786-4928-b932-f59f5b4ddbf0": { en: "Places", te: "గ్రామ ప్రాముఖ్య స్థలాలు" }
+  };
+
+  const categories = Object.entries(categoryMap).map(([id, names]) => ({
+    id,
+    name: isTeluguMode ? names.te : names.en
+  }));
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user || !token) {
+      toast({
+        variant: "destructive",
+        title: "Authentication required",
+        description: "Please sign in to contribute content.",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    if (!formData.title || !formData.description || !formData.category) {
+      toast({
+        variant: "destructive",
+        title: "Missing information",
+        description: "Please fill in all required fields.",
+      });
+      return;
+    }
+
+    if (activeTab !== "text" && !selectedFile) {
+      toast({
+        variant: "destructive",
+        title: "File required",
+        description: `Please select a ${activeTab} file to upload.`,
+      });
+      return;
+    }
+
     setIsUploading(true);
     
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      setUploadProgress(i);
-      await new Promise(resolve => setTimeout(resolve, 200));
+    try {
+      let result;
+      
+      if (activeTab === "text") {
+        // For text content, create a text blob
+        const textBlob = new Blob([formData.description], { type: 'text/plain' });
+        const textFile = new File([textBlob], 'content.txt', { type: 'text/plain' });
+        
+        result = await uploadFile(
+          token,
+          textFile,
+          formData.title,
+          formData.description,
+          formData.category,
+          user.id,
+          "text",
+          isTeluguMode ? "te" : "en",
+          setUploadProgress
+        );
+      } else if (selectedFile) {
+        result = await uploadFile(
+          token,
+          selectedFile,
+          formData.title,
+          formData.description,
+          formData.category,
+          user.id,
+          activeTab as 'audio' | 'video' | 'image',
+          isTeluguMode ? "te" : "en",
+          setUploadProgress
+        );
+      }
+
+      if (result?.success) {
+        toast({
+          title: "Success!",
+          description: isTeluguMode 
+            ? "మీ కంట్రిబ్యూషన్ విజయవంతంగా అప్‌లోడ్ చేయబడింది"
+            : "Your contribution has been uploaded successfully",
+        });
+        
+        // Reset form
+        setFormData({ title: "", location: "", category: "", description: "" });
+        setSelectedFile(null);
+        setUploadProgress(0);
+        
+        // Navigate to gallery or dashboard
+        navigate("/gallery");
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Upload failed",
+          description: result?.message || "An error occurred during upload",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "An error occurred during upload. Please try again.",
+      });
+    } finally {
+      setIsUploading(false);
     }
-    
-    setIsUploading(false);
-    setUploadProgress(0);
   };
 
   const contentTypes = [
@@ -119,7 +225,7 @@ const Contribute = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="text" className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
               <TabsList className="grid w-full grid-cols-4">
                 {contentTypes.map((type) => (
                   <TabsTrigger key={type.id} value={type.id} className="flex flex-col p-3 h-auto">
@@ -147,6 +253,8 @@ const Contribute = () => {
                             </Label>
                             <Input
                               id="title"
+                              value={formData.title}
+                              onChange={(e) => handleInputChange("title", e.target.value)}
                               placeholder={isTeluguMode ? "మీ కథకు శీర్షిక ఇవ్వండి" : "Give your story a title"}
                               required
                             />
@@ -158,6 +266,8 @@ const Contribute = () => {
                             </Label>
                             <Input
                               id="location"
+                              value={formData.location}
+                              onChange={(e) => handleInputChange("location", e.target.value)}
                               placeholder={isTeluguMode ? "గ్రామం, జిల్లా" : "Village, District"}
                             />
                           </div>
@@ -168,14 +278,14 @@ const Contribute = () => {
                             <Tag className="w-4 h-4" />
                             <span>{isTeluguMode ? "వర్గం" : "Category"}</span>
                           </Label>
-                          <Select required>
+                          <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)} required>
                             <SelectTrigger>
                               <SelectValue placeholder={isTeluguMode ? "వర్గం ఎంచుకోండి" : "Select a category"} />
                             </SelectTrigger>
                             <SelectContent className="pointer-events-auto">
-                              {(isTeluguMode ? teluguCategories : categories).map((category) => (
-                                <SelectItem key={category} value={category}>
-                                  {category}
+                              {categories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -190,6 +300,8 @@ const Contribute = () => {
                           <Textarea
                             id="description"
                             rows={6}
+                            value={formData.description}
+                            onChange={(e) => handleInputChange("description", e.target.value)}
                             placeholder={isTeluguMode 
                               ? "మీ కథ, అనుభవం లేదా జ్ఞాపకాన్ని వివరంగా రాయండి..."
                               : "Share your story, experience, or memory in detail..."
@@ -207,12 +319,30 @@ const Contribute = () => {
                           <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center hover:border-accent transition-colors">
                             <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                             <p className="text-muted-foreground mb-2">
-                              {isTeluguMode 
-                                ? `మీ ${type.label} ఫైల్‌ను ఇక్కడ డ్రాగ్ చేయండి లేదా బ్రౌజ్ చేయండి`
-                                : `Drag and drop your ${type.label.toLowerCase()} file here or browse`
-                              }
+                              {selectedFile ? (
+                                <span className="text-accent font-medium">{selectedFile.name}</span>
+                              ) : (
+                                isTeluguMode 
+                                  ? `మీ ${type.label} ఫైల్‌ను ఇక్కడ డ్రాగ్ చేయండి లేదా బ్రౌజ్ చేయండి`
+                                  : `Drag and drop your ${type.label.toLowerCase()} file here or browse`
+                              )}
                             </p>
-                            <Button variant="outline" type="button">
+                            <input
+                              type="file"
+                              id="file-input"
+                              className="hidden"
+                              onChange={handleFileChange}
+                              accept={
+                                type.id === "image" ? "image/*" :
+                                type.id === "video" ? "video/*" :
+                                type.id === "audio" ? "audio/*" : "*/*"
+                              }
+                            />
+                            <Button 
+                              variant="outline" 
+                              type="button"
+                              onClick={() => document.getElementById("file-input")?.click()}
+                            >
                               {isTeluguMode ? "ఫైల్ ఎంచుకోండి" : "Choose File"}
                             </Button>
                           </div>
